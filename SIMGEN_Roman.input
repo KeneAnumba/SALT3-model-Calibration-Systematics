@@ -1,0 +1,93 @@
+# template input file modified from PLASTIC for Roman simulations
+
+NGEN_LC: 5000    #Simulates 5000 SNe    
+#GENVERSION: starterkit_Roman_MWEBV_cut_dust_model  
+GENVERSION: Roman_KA_sims
+GENSOURCE:  RANDOM   
+#GENMODEL:   TRANSIENT
+
+# ---------------------------------------------------
+
+
+RANSEED:    123459
+CIDOFF: 200000
+FORMAT_MASK:  32  ! 2=TEXT  32=FITS #changed from 112 to 2
+GENFILTERS:   RZYJHF
+KCOR_FILE: $SNANA_ROMAN_ROOT/kcor/20210614/calib_ROMAN.fits.gz
+#KCOR_FILE:    $SNDATA_ROOT/kcor/ROMAN/baseline/calib_ROMAN.fits.gzI #missing PRISM table. Public file.
+
+GENRANGE_MJD:      55000 55720  # from FIRST MJD in the baselinev2 simlib to LAST MJD in the baselinev2 simlib
+GENRANGE_PEAKMJD:  55000 55720  # from FIRST MJD in the baselinev2 simlib to LAST MJD in the baselinev2 simlib
+GENSIGMA_SEARCH_PEAKMJD:  1.2
+
+#GENRANGE_REDSHIFT:  0.2   2.9    # XXX
+GENRANGE_REDSHIFT:  0.49   0.51
+GENRANGE_TREST:   -20.0   80.0    # XXX
+
+#GENSIGMA_VPEC: 300.0  # peculiar velocity spread without correction, km/sec
+#VPEC_ERR:      300.0  # --> no correction
+
+UVLAM_EXTRAPFLUX:  500  # extrapolate fluxes down to 500 A.
+
+SIMGEN_DUMP_TRAINSALT: 1
+
+LENSING_PROBMAP_FILE:  $SNDATA_ROOT/models/lensing/LENSING_PROBMAP_LogNormal+MICECATv1.DAT
+
+# smear flags: 0=off, 1=on
+SMEARFLAG_FLUX:    1  # photo-stat smearing of signal, sky, etc ...
+SMEARFLAG_ZEROPT:  1  # smear zero-point with zptsig
+
+TAKE_SPECTRUM: MJD(55000:55720:20.0)  TEXPOSE_ZPOLY(3000.0)
+
+# negative MWEBV-option ==> correct FLUXCAL with map and central filter wave
+GENSIGMA_MWEBV_RATIO: 0.16 # or change to match systematic . Added on June 17th 2026.
+OPT_MWEBV: 3         # SFD98 + Schalfly2011
+OPT_MWCOLORLAW: 99   # Fitzpatrick
+
+# 1=> software trigger 3=software & spec trigger
+APPLY_SEARCHEFF_OPT:  1  
+
+# define pipeline logic for trigger (e.g., 2 detetions)
+SEARCHEFF_PIPELINE_LOGIC_FILE:  $SNANA_LSST_ROOT/models/searcheff/SEARCHEFF_PIPELINE_LOGIC.DAT
+
+APPLY_CUTWIN_OPT: 1
+CUTWIN_MWEBV:    0  0.15  # 0  3   # cut on E(B-V)
+
+NEWMJD_DIF: 0.021  # to make trigger, 30 min between detections
+
+# cosmological params for lightcurve generation and redshift distribution
+#OMEGA_MATTER:  0.311
+#OMEGA_LAMBDA:  0.689
+#W0_LAMBDA:    -1.00
+#H0:           70.0   
+
+#INPUT_FILE_INCLUDE: $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_INCLUDE_SNIa-normal+DUST.INPUT
+HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIa-normal.WGTMAP.gz
+HOSTLIB_SCALE_PROPERTY_ERR: 0.0(LOGMASS),0.0(LOGSFR),0.0(LOGsSFR),0.0(COLOR)
+HOSTLIB_MSKOPT: 266  #2+8+256
+HOSTLIB_FILE: $SNANA_ROMAN_ROOT/simlib/ROMAN+LSST_DIFFSKY_SMALL+ZPHOT.HOSTLIB.gz
+HOSTLIB_DZTOL:  0.01,0.01   # loose libray match to avoid abort
+GENTYPE: 1
+SIMLIB_FILE:  $SNANA_ROMAN_USERS/rkessler/makeSimlib/set04_syncDavid/output_SYNC_ROW28/ROMAN-a00-t00-z00.SIMLIB 
+SIMGEN_DUMP: 14 CID ZCMB PEAKMAG_R PEAKMAG_Z PEAKMAG_Y PEAKMAG_J PEAKMAG_H PEAKMAG_F SNRMAX_R SNRMAX_Z SNRMAX_Y SNRMAX_J SNRMAX_H SNRMAX_F
+
+
+#Pasted from the Roman include file
+GENMODEL:  $PLASTICC_ROOT/model_libs_updates/SALT3.NIR_WAVEEXT
+GENMODEL_EXTRAP_LATETIME: $PLASTICC_MODELS/SNIa_Extrap_LateTime_2expon.TEXT
+GENMODEL_MSKOPT: 16  # negative SED flux --> zero
+
+# Rate is from Rob Knop's eye-ball fit to David Rubin's SNIa rate that
+# is based on Rodney 2014. The 4 parameters per DNDZ key are a,b,z0,z1 where
+#   Volumetric rate = a*(1+z)^b for z0 < z < z1
+
+DNDZ: POWERLAW2 2.500E-5   1.5   0.0 1.1   # added Jul
+DNDZ: POWERLAW2 7.608E-5   0.0   1.1 1.6
+DNDZ: POWERLAW2 5.143E-4  -2.0   1.6 3.0 
+ 
+# population params from Popovic 2021 and DES-SN5YR
+GENPDF_FILE: $SNDATA_ROOT/models/population_pdf/DES-SN5YR_P23/DES-SN5YR_DES_S3_P23.DAT.gz
+#GENPDF_FILE: $SNDATA_ROOT/models/population_pdf/DES-SN5YR/DES-SN5YR_DES_S3_G10.DAT.gz
+GENPDF_OPTMASK: 1    # 0-> abort if host param is outside map range
+                     # 1-> exptrapolate if host param is outside map range
+                     
