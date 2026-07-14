@@ -26,7 +26,7 @@ Submit_trainsalt3.config
 
 To simulate LSST SNe, do
 
-   snlc_sim.exe SIMGEN_LSST.input (see further instructions in SIMGEN_LSST.input)
+   snlc_sim.exe SIMGEN_LSST.input   (see further instructions in SIMGEN_LSST.input)
 
 To simulate Roman SNe (both light curves and prism spectra)
 
