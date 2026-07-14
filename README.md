@@ -6,7 +6,7 @@ This repo contains the pipeline, configuration files, and analysis scripts used 
 
 ## A note on the computing environment 
 
-The instructions in this repository assume you are running on the University of Chicago Research Computing Center's Midway cluster, where SNANA — along with SALT3, Pippin, and their dependencies — is already installed and configured for general use. We do not provide installation instructions for other systems; if you are working outside Midway, please refer to the SNANA documentation for setup on your own system.
+The instructions in this repository assume that one is doing all computations on the University of Chicago Research Computing Center's Midway cluster, where SNANA — along with SALT3, Pippin, and their dependencies — is already installed and configured for general use. We do not provide installation instructions for other systems; if you are working outside Midway, please refer to the SNANA documentation for setup on your own system.
 
 
 ## Overview
