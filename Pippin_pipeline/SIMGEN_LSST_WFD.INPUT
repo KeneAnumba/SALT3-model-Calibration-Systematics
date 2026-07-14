@@ -1,0 +1,104 @@
+# simulate low-z LSST-WFD to serve as low-z anchor for Roman.
+# The key issue here is not which survey, but redshift range
+# and number of events.
+# Beware to override GENRANGE_REDSHIFT and GENRANGE_TREST on command line
+#
+# Nov 12 2024 updates:
+#  + switch G10 scatter model to DUST model
+#  + switch DC2 SIMLIB to v3.4 cadence 
+#  + switch HOSTLIB from DIFSKY back to ELASTICC
+#  + adjust MJD and PEAKMJD ranges to new cadence MJD range
+#  + restore VPEC keys since ELASTICC hostlib does not have vpec.
+#  + switch EFF_detect map from plasticc-original to DC2-S21
+#
+# Nov 16 2024: require MWEBV < 0.05
+# Mar 09 2025: SMEARFLAG_ZEROPT -> 3 (was 1)
+#
+NGENTOT_LC: 40
+GENVERSION: RKTEST_LSST_WFD
+GENSOURCE:  RANDOM   
+GENMODEL:   SALT3  # needed for pippin
+GENTYPE: 10
+
+INPUT_INCLUDE_FILE: $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_INCLUDE_SNIa-normal+DUST.INPUT
+
+SIMLIB_FILE:       $SNANA_LSST_ROOT/simlibs/baseline_v3.4_10yrs_all.simlib.COADD
+SIMLIB_MINSEASON:  30  # remove seasons < 30 days 
+#SIMLIB_SURVEY:     LOWZ
+SIMLIB_FIELDLIST:  WFD
+
+
+#HOSTLIB_FILE:         $ELASTICC_ROOT/roman+desc/inputs_hostlib/ROMAN+LSST_DIFFSKY_LARGE_LOWZ.HOSTLIB
+HOSTLIB_FILE:         $ELASTICC_HOSTLIB/SNIa_GHOST.HOSTLIB
+HOSTLIB_WGTMAP_FILE:  $ELASTICC_WGTMAP/SNIa_GHOST_nox1.WGTMAP 
+HOSTLIB_WGTMAP_EXTRAP: 1
+HOSTLIB_DZTOL:   0.005,0.01    # loose libray match to avoid abort
+HOSTLIB_MSKOPT:  258           # 2=noise, 8=SN->galCoord 256=verbose; 512=VPEC
+
+# ---------------------------------------------------
+
+SOLID_ANGLE:  6.0
+
+RANSEED:        122459
+FORMAT_MASK:    32  ! 2=TEXT  32=FITS
+
+GENFILTERS:   ugrizY
+KCOR_FILE:    $SNDATA_ROOT/kcor/LSST/baseline/kcor_LSST.fits
+
+# selection criteria for generation: 59580 - 60675
+
+GENRANGE_MJD:      60795  64450
+GENRANGE_PEAKMJD:  60750  64500   # PEAKMJD cut is wider to catch rise time
+GENSIGMA_SEARCH_PEAKMJD:  1.0
+
+# Remove redshif keys to avoid duplicate with INCLUDE file.
+#GENRANGE_REDSHIFT:  0.02   .09
+#GENSIGMA_REDSHIFT:  0.0001     
+#GENRANGE_TREST:   -20.0  60.0  
+
+# Pec velocity
+GENSIGMA_VPEC: 300.0  # peculiar velocity spread without correction, km/sec
+VPEC_ERR:      200.0 
+
+UVLAM_EXTRAPFLUX:  500  # extrapolate fluxes down to 500 A.
+
+LENSING_PROBMAP_FILE:  $SNDATA_ROOT/models/lensing/LENSING_PROBMAP_LogNormal+MICECATv1.DAT
+
+# smear flags: 0=off, 1=on
+SMEARFLAG_FLUX:    1  # photo-stat smearing of signal, sky, etc ...
+SMEARFLAG_ZEROPT:  3  # smear zero-point with zptsig
+
+# negative MWEBV-option ==> correct FLUXCAL with map and central filter wave
+OPT_MWEBV: 3         # SFD98 + Schalfly2011
+OPT_MWCOLORLAW: 99   # Fitzpatrick
+
+# 1=> software trigger 3=software & spec trigger
+APPLY_SEARCHEFF_OPT:  1  
+SEARCHEFF_PIPELINE_EFF_FILE:  $SNANA_LSST_ROOT/models/searcheff/SEARCHEFF_PIPELINE_LSST_DC2_Run2.2i_WFD.DAT
+
+
+# define pipeline logic for trigger (e.g., 2 detetions)
+SEARCHEFF_PIPELINE_LOGIC_FILE:  $SNANA_LSST_ROOT/models/searcheff/SEARCHEFF_PIPELINE_LOGIC.DAT
+
+# 100% spec-id (and zSpec)
+SEARCHEFF_SPEC_FILE:   ONE
+
+# remove PLASTICC Efficiency for spec-ID and zHOST
+#SEARCHEFF_SPEC_FILE: $SNANA_LSST_ROOT/models/searcheff/PLASTICC_ORIGINAL_LSST_SPECEFF.DAT 
+#SEARCHEFF_zHOST_FILE:  $SNANA_LSST_ROOT/models/searcheff/PLASTICC_ORIGINAL_zHOST_4MOST_DDF.DAT 
+
+APPLY_CUTWIN_OPT: 1
+CUTWIN_NOBS_NOSATURATE: 10 9999 grizY
+CUTWIN_MWEBV:           0  0.05
+
+NEWMJD_DIF: 0.021  # to make trigger, 30 min between detections
+
+
+SIMGEN_DUMP:  37
+   CID LIBID SIM_SEARCHEFF_MASK CUTMASK GENTYPE  SNTYPE  NON1A_INDEX
+   ZCMB ZHELIO ZCMB_SMEAR GALZPHOT GALZPHOTERR RA DECL  MWEBV
+   MU LENSDMU PEAKMJD MJD_TRIGGER
+   PEAKMAG_u PEAKMAG_g PEAKMAG_r PEAKMAG_i PEAKMAG_z PEAKMAG_Y
+   SNRMAX_u SNRMAX_g SNRMAX_r SNRMAX_i SNRMAX_z SNRMAX_Y
+   SNRMAX SNRMAX2 SNRMAX3 AV
+   NOBS NOBS_SATURATE

@@ -1,0 +1,75 @@
+DOCUMENTATION:
+  PURPOSE: zSpec(HOST) effic vs. redshift
+  INTENT:  Nominal
+  USAGE_KEY:   SEARCHEFF_zHOST_FILE
+  USAGE_CODE:  snlc_sim.exe
+  NOTES:
+  - eff = 100%  for z<0.3; eff=0 for z>0.3
+DOCUMENTATION_END:
+
+
+VARNAMES:  REDSHIFT HOSTEFF
+HOSTEFF:   0.0	     1.0
+HOSTEFF:   0.05	     1.0
+HOSTEFF:   0.10      1.0
+HOSTEFF:   0.15      1.0
+HOSTEFF:   0.20      1.0  
+HOSTEFF:   0.25      1.0  
+HOSTEFF:   0.30      0.5
+HOSTEFF:   0.35      0.0
+HOSTEFF:   0.40      0.0
+HOSTEFF:   0.45      0.0
+HOSTEFF:   0.50      0.0
+HOSTEFF:   0.55      0.0
+HOSTEFF:   0.60      0.0
+HOSTEFF:   0.65      0.0
+HOSTEFF:   0.70      0.0
+HOSTEFF:   0.75      0.0
+HOSTEFF:   0.80      0.0
+HOSTEFF:   0.85      0.0
+HOSTEFF:   0.90      0.0
+HOSTEFF:   0.95      0.0
+HOSTEFF:   1.00	     0.0
+HOSTEFF:   1.05	     0.0
+HOSTEFF:   1.10      0.0
+HOSTEFF:   1.15      0.0
+HOSTEFF:   1.20      0.0  
+HOSTEFF:   1.25      0.0  
+HOSTEFF:   1.30      0.0
+HOSTEFF:   1.35      0.0
+HOSTEFF:   1.40      0.0
+HOSTEFF:   1.45      0.0
+HOSTEFF:   1.50      0.0
+HOSTEFF:   1.55      0.0
+HOSTEFF:   1.60      0.0
+HOSTEFF:   1.65      0.0
+HOSTEFF:   1.70      0.0
+HOSTEFF:   1.75      0.0
+HOSTEFF:   1.80      0.0
+HOSTEFF:   1.85      0.0
+HOSTEFF:   1.90      0.0
+HOSTEFF:   1.95      0.0
+HOSTEFF:   2.00	     0.0
+HOSTEFF:   2.05	     0.0
+HOSTEFF:   2.10      0.0
+HOSTEFF:   2.15      0.0
+HOSTEFF:   2.20      0.0  
+HOSTEFF:   2.25      0.0  
+HOSTEFF:   2.30      0.0
+HOSTEFF:   2.35      0.0
+HOSTEFF:   2.40      0.0
+HOSTEFF:   2.45      0.0
+HOSTEFF:   2.50      0.0
+HOSTEFF:   2.55      0.0
+HOSTEFF:   2.60      0.0
+HOSTEFF:   2.65      0.0
+HOSTEFF:   2.70      0.0
+HOSTEFF:   2.75      0.0
+HOSTEFF:   2.80      0.0
+HOSTEFF:   2.85      0.0
+HOSTEFF:   2.90      0.0
+HOSTEFF:   2.95      0.0
+HOSTEFF:   3.00      0.0
+
+
+

@@ -1,0 +1,133 @@
+# Nov 16 2024; add MWEBV cut and set 800 max for LOWZ
+# Nov 19 2024: switch opt biascor from 4336 to 240 (original sigma_int)
+# Jan 31 2025: 
+#    + fix sig1=0.1 (was 0.01)
+#    + use smaller z-bins for biasCor (requires minor SALT2mu bugfix to avoid abort)
+#    + nzbin -> 45 (was 30)
+#
+# Feb 02 2025:
+#    + define 2 logmass bins for biascor and muCOVscale
+#    + float u5=1 mass step 
+#    + lensing error -> 0.028 z (was 0.055 z)
+
+CONFIG:
+  BATCH_INFO: sbatch  $SBATCH_TEMPLATES/SBATCH_DEFAULT.TEMPLATE  4
+  BATCH_WALLTIME:  '24:00:00'
+  
+  INPDIR+:
+  - $SNANA_LSST_ROOT/ayanmitr/starterKits/plasticc_SNIa_cosmology/OUT_LCFIT_DATA
+
+#  STRING_VERSION_IGNORE: BiasCor
+  
+  OUTDIR:  OUT_BBC5D
+
+# the relevant FITOPTxMUOPT (default is entire FITOPT x MUOPT matrix)
+  FITOPTxMUOPT: 
+  - 0+0    # FITOPT000 & MUOPT000
+
+ 
+# give wfit options to trigger post-processing with wfit
+# Use WMAP-style prior,	but with exact sim parameters and half the error.
+#  WFITMUDIF_OPT: -om_sim 0.30  -cmb_sim  -sigma_Rcmb 0.01 
+
+#END_YAML
+
+
+
+# =================================================================
+# note that input FITRES files are gzipped, but no need to specify .gz
+
+varname_pIa=PROB_PERFECT
+idsurvey_list_probcc0=LSST
+
+datafile=none
+prefix=OUT_BBC5D
+#nmax=500000,800(LOWZ)
+nmax=300000,605(WFD)
+
+# See all biasCor options with
+#    grep MASK_BIASCOR $SNANA_DIR/src/SALT2mu.c | grep def
+# here we chose 240 =
+#  +16 -> 5D biasCor
+#  +32 -> scale errors to match RMS(MURESID)
+#  +64 -> biasCor per sample (separate sample for zSPEC and zPHOT )
+#  +128 -> correct MU at z_obs (don't correct mB,x1,c)
+#
+
+opt_biascor=240   # original sigint
+#opt_biascor=4336  # for dust model, Oct 10 2024
+
+#opt_biascor=1  # 1(1D)
+
+simfile_biascor=$SNANA_LSST_ROOT/ayanmitr/starterKits/plasticc_SNIa_cosmology/OUT_LCFIT_BIASCOR/PLASTICC_SNIa_BIASCOR/FITOPT000.FITRES
+
+simfile_ccprior=same
+
+zspec_errmax_idsample=3.0E-4
+
+#surveygroup_biascor='ROMAN(zbin=.1)'
+#xxxfieldGroup_biascor='WFD(zbin=.02),DDF(zbin=.08),WIDE(zbin=.1),DEEP(zbin=0.15)'
+fieldGroup_biascor='WFD(zbin=.02),DDF(zbin=.04),WIDE(zbin=.05),DEEP(zbin=0.08)'  # Jan 31 2025
+
+minos=0          # faster fit with MIGRAD errors
+blindflag=0
+ndump_nobiascor=3  # dump first 3 events that have no biasCor
+#lensing_zpar=0.055
+lensing_zpar=0.028  # corresponds to WEAKLENS_SCALE: 0.5 in the sim
+min_per_zbin=1
+redchi2_tol=.01
+fitflag_sigmb=2
+sig1=0.1
+
+powzbin=2.0      # bin size ~ (1+z)^2
+zmin=0.02
+zmax=3.0
+nzbin=45
+
+nbin_logmass=2
+logmass_min=-15
+logmass_max=35
+
+x1min=-3.0
+x1max=+3.0
+cmax=+0.3
+cmin=-0.3
+
+CUTWIN  x1ERR     0.    1.0
+CUTWIN  cERR      0.    2.0
+CUTWIN  PKMJDERR  0.    2.0
+CUTWIN  FITPROB   0.01  1.0
+CUTWIN  SNRSUM    40    1.0E8
+CUTWIN  MWEBV     0     0.1
+
+errmask_write=0
+chi2max=16
+p1=0.14
+p2=3.1
+p3=0.0
+p4=0.0
+p5=0.0
+p6=0.0
+p7=10.0    # logmass split
+p8=0.01    # tau logmass step
+p9=0.685   # Om_Lambda match cosmology for Planck
+p10=0.0
+p11=-1.0   # w0
+p12=0.0    # wa
+p13=1.0    # scale on PCC
+u1=1
+u2=1
+u3=0
+u4=0
+u5=1
+u6=0
+u7=0
+u8=0
+u9=0
+u10=0
+u11=0
+u12=0
+u13=1
+h0=70.0
+mag0=-30.00
+uave=1
