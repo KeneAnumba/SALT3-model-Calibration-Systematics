@@ -12,7 +12,7 @@ The instructions in this repository assume that one is doing all computations on
 ## Overview
 
 
-Most previous forecasts propagate calibration systematics only through light-curve fitting. Here, we additionally propagate calibration uncertainties through the SALT3 training step itself, training a new SALT3 model from simulated data rather than reusing a fixed model throughout.
+Most previous forecasts propagate calibration systematics only through light-curve fitting. Here, we additionally propagate calibration uncertainties through the SALT3 training step itself, training a new SALT3 model and its 'biased' variants from simulated data.
 
 The cosmological analysis itself is run with Pippin, the SNANA pipeline driver. SALT3 training with perturbed photometric calibration is done as an external step before Pippin is invoked, and the resulting trained models are passed in as inputs to Pippin's LCFIT stage as fitting options (FITOPTS). This repository documents both halves: the external calibration/training step, and the Pippin configuration used for everything downstream.
 
