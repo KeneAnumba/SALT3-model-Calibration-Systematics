@@ -1,0 +1,47 @@
+
+# Illustrate defining systematics for Pippin+SNANA job.
+# All of these systematics will be used for covariance matrix.
+# 2024-09-17 Rebekah Hounsell added nonlinearity  (commented out)
+# 2024-10-23 R.Kessler: define NONLIN map for alpha=0.001 to get large lever arm
+#               for derivative, and scale here by 0.05 for alpha=5E-5
+#
+
+FLAG_USE_SAME_EVENTS: 1 
+
+GLOBAL:
+    # Name                      # scale  # command and arguments
+    MWEBV:                      1.0      MWEBV_SCALE 0.95
+    Cal_mag_per_A:              1.0      MAGOBS_SHIFT_ZP_PARAMS 0 0.00714 0
+
+LSST:  # LSST WFD(LOWZ) and DDF(hiz)
+    Cal_LSST_ZP_u:              1.0       MAGOBS_SHIFT_ZP 'u .005' # 5 mmag
+    Cal_LSST_ZP_g:              1.0       MAGOBS_SHIFT_ZP 'g .005' # 5 mmag
+    Cal_LSST_ZP_r:              1.0       MAGOBS_SHIFT_ZP 'r .005' # 5 mmag
+    Cal_LSST_ZP_i:              1.0       MAGOBS_SHIFT_ZP 'i .005' # 5 mmag
+    Cal_LSST_ZP_z:              1.0       MAGOBS_SHIFT_ZP 'z .005' # 5 mmag
+    Cal_LSST_ZP_Y:              1.0       MAGOBS_SHIFT_ZP 'Y .005' # 5 mmag
+    Cal_LSST_wave_u:            1.0       FILTER_LAMSHIFT 'u 5'    #
+    Cal_LSST_wave_g:            1.0       FILTER_LAMSHIFT 'g 5'    #
+    Cal_LSST_wave_r:            1.0       FILTER_LAMSHIFT 'r 5'    #
+    Cal_LSST_wave_i:            1.0       FILTER_LAMSHIFT 'i 5'    #
+    Cal_LSST_wave_z:            1.0       FILTER_LAMSHIFT 'z 5'    #
+    Cal_LSST_wave_Y:            1.0       FILTER_LAMSHIFT 'Y 5'    # 5 A
+    zshift:                  0.4      REDSHIFT_FINAL_SHIFT 0.0001
+
+ROMAN:
+    Cal_ROMAN_ZP_R:             1.0       MAGOBS_SHIFT_ZP 'R .005' # 5 mmag
+    Cal_ROMAN_ZP_Z:             1.0       MAGOBS_SHIFT_ZP 'Z .005' # 5 mmag
+    Cal_ROMAN_ZP_Y:             1.0       MAGOBS_SHIFT_ZP 'Y .005' # 5 mmag
+    Cal_ROMAN_ZP_J:             1.0       MAGOBS_SHIFT_ZP 'J .005' # 5 mmag
+    Cal_ROMAN_ZP_H:             1.0       MAGOBS_SHIFT_ZP 'H .005' # 5 mmag
+    Cal_ROMAN_ZP_F:             1.0       MAGOBS_SHIFT_ZP 'F .005' # 5 mmag 
+    Cal_ROMAN_wave_R:           1.0       FILTER_LAMSHIFT 'R 5'    #
+    Cal_ROMAN_wave_Z:           1.0       FILTER_LAMSHIFT 'Z 5'    #
+    Cal_ROMAN_wave_Y:           1.0       FILTER_LAMSHIFT 'Y 5'    #
+    Cal_ROMAN_wave_J:           1.0       FILTER_LAMSHIFT 'J 5'    #
+    Cal_ROMAN_wave_H:           1.0       FILTER_LAMSHIFT 'H 5'    #
+    Cal_ROMAN_wave_F:           1.0       FILTER_LAMSHIFT 'F 5'    # 5 A
+    Cal_ROMAN_nonlin:           0.05      NONLINEARITY_FILE $SNANA_ROMAN_ROOT/instrument_params/roman_uncorr_nonlinearity.dat 
+    ZERRSCALE:              1.0       PRIOR_ZERRSCALE 1.2
+    Photo_shift:            1.0       HOSTGAL_PHOTOZ_SHIFT 0.01
+    

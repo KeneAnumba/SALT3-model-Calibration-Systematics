@@ -1,0 +1,28 @@
+
+# Illustrate defining systematics for Pippin+SNANA job.
+# All of these systematics will be used for covariance matrix.
+#
+FLAG_USE_SAME_EVENTS: 1 
+
+GLOBAL:
+    # Name                      # scale  # command and arguments
+    MWEBV:                     1.0      MWEBV_SCALE 0.95
+    Cal_mag_per_A:             1.0      MAGOBS_SHIFT_ZP_PARAMS 0 0.00714 0
+    Cal_SALT3_SYS1:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL001
+    Cal_SALT3_SYS2:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL002
+    Cal_SALT3_SYS3:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL003
+    Cal_SALT3_SYS4:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL004
+    Cal_SALT3_SYS5:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL005
+    Cal_SALT3_SYS6:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL006
+    Cal_SALT3_SYS7:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL007
+    Cal_SALT3_SYS8:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL008
+    Cal_SALT3_SYS9:            0.33       FITMODEL_NAME $SNANA_ROMAN_ROOT/models/SALT3+SYS/SALT3.MODEL009
+
+LSST:  # LSST-DC2
+    zshift:                  0.4      REDSHIFT_FINAL_SHIFT 0.0001
+
+ROMAN:
+    Cal_ROMAN_nonlin:           0.05      NONLINEARITY_FILE $SNANA_ROMAN_ROOT/instrument_params/roman_uncorr_nonlinearity.dat 
+    ZERRSCALE:              1.0       PRIOR_ZERRSCALE 1.2
+    Photo_shift:            1.0       HOSTGAL_PHOTOZ_SHIFT 0.01
+    
