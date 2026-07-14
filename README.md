@@ -20,5 +20,5 @@ Pipeline Overview:
 
 This repository documents the full analysis pipeline used in the paper, split into two stages:
 
-1. SALT3 model realization training (see instructions in SALT3_training_file attached)
+1. SALT3 model realizations training (see instructions in SALT3_training_file attached)
 2. Full analysis pipeline via Pippin (see guidelines in pippin_pipeline_file attached) 
