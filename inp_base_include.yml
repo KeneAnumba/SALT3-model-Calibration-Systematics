@@ -1,0 +1,147 @@
+# Created July 21 2024
+# alias anchor file for bcor and analysis.
+#
+# July 25 2024 : 
+#   + add cut on FITWIN_PROB_ITER1 ; CPU *= 0.84
+#   + increase LCFIT ncore = 40 -> 60 ; WALLTIME *= .666 
+#       expect -> net wall time to be about x1.8 less.
+#
+# Sep 10 2024: switch SNIa WGTMAP to the "nox1" version to be compatible
+#              with GENPDF_FILE
+#
+# Oct 04 2024: switch all HOSTLIB_WGTMAPs to point to 
+#                   $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_*.WGTMAP
+#
+# Nov 17 2024: use dndz_model1.dat to override analytic DNDZ 
+# Jan 13 2025: add cuts on MJD and PEAKMJD
+# Feb 02 2025: 
+#      + add SEARCHEFF_zHOST file with zSpec for z<0.3
+#      + scale sim weak lensing by 0.5 to assume some kind of analysis correcdtion
+
+ALIAS:
+
+  SIM_ROMAN_OPTS: &sim_roman_opts
+    SEARCHEFF_PIPELINE_LOGIC_FILE:  $SNANA_ROMAN_ROOT/models/searcheff/SEARCHEFF_PIPELINE_LOGIC_PLAN2-ROW20.DAT 
+    SEARCHEFF_zHOST_FILE:           $directory_path/SEARCHEFF_zHOST_CCSrec.DAT 
+    WEAKLENS_DMUSCALE:              0.5  
+
+  ROMAN_BASE_IA: &roman_base_ia
+    BASE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIa-normal.INPUT
+    GENRANGE_REDSHIFT:  0.1   2.95
+    GENRANGE_TREST:     -20    60 
+    HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIa-normal.WGTMAP
+    DNDZ_FILE:  $SNANA_ROMAN_USERS/rkessler/makeSimlib/set02/dndz_model1.dat    
+    <<: *sim_roman_opts
+  
+  ROMAN_BASE_PECIAX: &roman_base_peciax
+    BASE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIax.INPUT
+    GENRANGE_REDSHIFT:  0.1   2.95
+    HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIax.WGTMAP
+    <<: *sim_roman_opts
+
+  ROMAN_BASE_PEC91BG: &roman_base_pec91bg
+    BASE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIa-91bg.INPUT
+    GENRANGE_REDSHIFT:  0.1   2.95
+    HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIa-91bg.WGTMAP
+    <<: *sim_roman_opts
+
+  ROMAN_BASE_IIP: &roman_base_iip
+    BASE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIIP.INPUT
+    GENRANGE_REDSHIFT:  0.1   2.95
+    HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIIP.WGTMAP
+    <<: *sim_roman_opts
+
+  ROMAN_BASE_IIL: &roman_base_iil
+    BASE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIIL.INPUT
+    GENRANGE_REDSHIFT:  0.1   2.95
+    HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIIL.WGTMAP
+    <<: *sim_roman_opts
+
+  ROMAN_BASE_IB: &roman_base_ib
+    BASE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIb.INPUT
+    GENRANGE_REDSHIFT:  0.1   2.95
+    HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIb.WGTMAP
+    <<: *sim_roman_opts
+
+  ROMAN_BASE_IC: &roman_base_ic
+    BASE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIc.INPUT
+    GENRANGE_REDSHIFT:  0.1   2.95
+    HOSTLIB_WGTMAP_FILE: $SNANA_ROMAN_ROOT/simlib/WGTMAPS/ROMAN_DIFFSKY_SNIc.WGTMAP
+    <<: *sim_roman_opts
+
+  LOWZ_BASE: &lowz_base  # NOT_ROMAN
+    BASE:        $directory_path/Inputs/SIMGEN_LSST_WFD.INPUT # NOT_ROMAN
+    GENRANGE_REDSHIFT:  0.015  0.09  # NOT_ROMAN
+    GENRANGE_TREST:     -20    60    # NOT_ROMAN
+    DNDZ_FILE:  $SNANA_ROMAN_USERS/rkessler/makeSimlib/set02/dndz_model1.dat  # NOT_ROMAN
+
+  DDF_BASE: &ddf_base  # NOT_ROMAN
+    BASE:        $directory_path/Inputs/SIMGEN_LSST_WFD.INPUT     # NOT_ROMAN
+    SIMLIB_FILE:        $SNANA_LSST_ROOT/simlibs/baseline_v3.4_10yrs_ddf.simlib.COADD  # NOT_ROMAN
+    SIMLIB_FIELDLIST:   DDF          # NOT_ROMAN
+    SOLID_ANGLE:        0.03012      # NOT_ROMAN  (99 sq deg)
+    GENRANGE_TREST:     -20    60    # NOT_ROMAN
+    DNDZ_FILE:  $SNANA_ROMAN_USERS/rkessler/makeSimlib/set02/dndz_model1.dat  # NOT_ROMAN
+
+  DDF_REDSHIFT_DATA: &ddf_redshift_data       # NOT_ROMAN
+    GENRANGE_REDSHIFT:  0.02   0.5   # NOT_ROMAN
+
+  DDF_REDSHIFT_BCOR: &ddf_redshift_bcor       # NOT_ROMAN
+    GENRANGE_REDSHIFT:  0.02   0.6   # NOT_ROMAN
+
+# - - - - - - - -
+  HOSTLIB_FILE_ROMAN: &hostlib_file_roman
+    HOSTLIB_FILE:  $SNANA_ROMAN_ROOT/simlib/ROMAN+LSST_DIFFSKY_SMALL+ZPHOT.HOSTLIB
+
+  SNIAMODEL_DUST:   &sniamodel_dust
+    EXCLUDE_INCLUDE_FILE: DUST
+    INPUT_INCLUDE_FILE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_INCLUDE_SNIa-normal+DUST.INPUT
+
+  SNIAMODEL_G10:   &sniamodel_g10
+    EXCLUDE_INCLUDE_FILE: DUST
+    INPUT_INCLUDE_FILE:   $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_INCLUDE_SNIa-normal+G10.INPUT
+
+    
+    
+# xx restore ?    HOSTLIB_FILE:  $SNANA_ROMAN_ROOT/simlib/ROMAN+LSST_DIFFSKY_MEDIUM+ZPHOT.HOSTLIB 
+
+  BATCH_INFO_SIMGEN: &batch_info_simgen_roman
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 20
+
+  BATCH_INFO_SIMGEN: &batch_info_simgen_lowz
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 10
+
+  BATCH_INFO_SIMGEN: &batch_info_simgen_ddf
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 10
+
+# - - - - - 
+
+  BATCH_INFO_LCFIT_DATA: &batch_info_lcfit_roman_data
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 60
+
+  BATCH_INFO_LCFIT_BCOR: &batch_info_lcfit_roman_bcor
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 80
+    BATCH_WALLTIME: '36:00:00'
+
+  BATCH_INFO_LCFIT: &batch_info_lcfit_lowz
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 20
+
+  BATCH_INFO_LCFIT: &batch_info_lcfit_ddf
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 25
+
+  APPEND_FITRES: &append_fitres_roman
+    APPEND_TABLE_VARLIST: SNRMAX_R SNRMAX_Z SNRMAX_Y SNRMAX_J SNRMAX_H SNRMAX_F FLUXCALMAX_u FLUXCALMAX_g FLUXCALMAX_r FLUXCALMAX_i FLUXCALMAX_z FLUXCALMAX_Y TrestMIN TrestMAX T0GAPMAX TGAPMAX TrestRange
+
+  ROMAN_SNLCINP_CUTS:  &roman_snlcinp_cuts
+    ABORT_ON_NOEPOCHS: F
+    CUTWIN_SNRMAX:     0  1.0E8
+    CUTWIN_SNRSUM:     35 1.0E8
+    CUTWIN_MJD:        54800 56300
+    USESIM_REDSHIFT:  T   #cheat mode to use true redshift as zspec (27th August 2025)
+
+  ROMAN_FITINP_CUTS:  &roman_fitinp_cuts
+    FITWIN_PEAKMJD:    55000 55735 
+    OPT_PHOTOZ:  0  #cheat mode to use zspec instead of photoz
+    
+#    DEBUG_FLAG:        1219         # updated code for initialize SALT3 params for LCFIT
+  
