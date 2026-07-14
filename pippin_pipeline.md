@@ -18,4 +18,13 @@ The top level files are:
   3. inp_base_bcor+train.yml
   4. inp_base_include.yml
 
+To run the config files:
+
+```bash
+pippin.sh pippin_bcor_config.yml >& bcor.log &
+```
+```bash
+pippin.sh pippin_analysis_config.yml >& analysis_config.log &
+```
+The above commands will give one back the control of their screen as well as output any errors in .log files.
 
