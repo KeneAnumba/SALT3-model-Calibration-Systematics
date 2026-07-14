@@ -1,0 +1,74 @@
+CNFIG:
+    BATCH_INFO: 
+    VERSION: 
+    OUTDIR: /project2/rkessler/SURVEYS/ROMAN/ROOT/starterKits/SALT3train_2 
+#END_YAML 
+	
+   &SNLCINP   
+
+     VERSION_PHOTOMETRY = 'starterkit_Roman_MWEBV_cut_dust_model' ! RK - let SNANA code find the folder
+
+    !PRIVATE_DATA_PATH = '/project2/rkessler/SURVEYS/DES/USERS/Keneanumba/New_Obs_Strat_LSST+Roman_SIM'
+     KCOR_FILE         = '/project2/rkessler/SURVEYS/DES/USERS/Keneanumba/5000_SNe_simulation_LSST+Roman/kcor_LSST_Roman_ugrizyRZYJHF.fits' 
+     SNTABLE_LIST = 'FITRES LCPLOT'
+     TEXTFILE_PREFIX = 'FIT_Roman'
+
+     !OPT_SNCID_LIST = 3
+     NFIT_ITERATION = 2
+     INTERP_OPT     = 1
+     USE_MWCOR = F
+     MXLC_PLOT = 200
+     
+     H0_REF   = 70.0
+     OLAM_REF =  0.689
+     OMAT_REF =  0.311
+     W0_REF   = -1.00
+ 
+     CUTWIN_CID  = 0,99999999999990
+     
+     LDMP_SNFAIL =  F
+
+     ABORT_ON_NOEPOCHS = F
+
+     RV_MWCOLORLAW = 3.1
+     OPT_MWCOLORLAW = 99
+     OPT_MWEBV = 2
+     cutwin_Nepoch    =      1
+
+     MAGOBS_SHIFT_PRIMARY = ' '
+     EPCUT_SNRMIN = ''
+     ABORT_ON_NOEPOCHS = F
+
+     OPT_SETPKMJD = 20
+
+  &END
+ 
+ 
+  &FITINP
+
+         FITMODEL_NAME = '$PLASTICC_ROOT/model_libs_updates/SALT3.NIR_WAVEEXT'
+         RESTLAMBDA_FITRANGE = 4000,20000
+
+         PRIOR_MJDSIG            = 5.0
+         PRIOR_LUMIPAR_RANGE = -3.0, 3.0
+         PRIOR_LUMIPAR_SIGMA = 0.1
+
+         OPT_COVAR = 1
+         OPT_XTMW_ERR = 1
+
+         TREST_REJECT  = -15.0, 45.0
+         NGRID_PDF         = 0
+
+         FUDGEALL_ITER1_MAXFRAC = 0.02
+         FILTLIST_FIT = 'RZYJHF'
+
+         FITWIN_PROB = 0.0,  1.01
+
+         PRIOR_SHAPE_RANGE = -6.0, 6.0
+         FITWIN_SHAPE = -5.0, +5.0
+         FITWIN_COLOR = -0.5, +0.5
+         FITWIN_TREST = -15.0, 45.0
+         CHECK_CRAZYFITERR = F
+
+  &END
+  

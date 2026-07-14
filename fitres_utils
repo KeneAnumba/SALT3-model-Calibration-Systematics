@@ -1,0 +1,249 @@
+"""
+fitres_utils.py
+
+Small shared helper for reading SNANA-style FITRES files (as produced by
+SNANA's snlc_fit.exe, e.g. FIT_LSST.FITRES / FIT_Roman.FITRES) and applying
+standard light-curve-fit quality cuts before the results are turned into
+SALTShaker starter-kit lists (tmaxlist / snparlist).
+
+A FITRES file looks like:
+
+    # VERSION_PHOTOMETRY:  starterkit_Roman_MWEBV_cut_dust_model
+    # SNANA_VERSION: v12_01-45-g8421c0b
+    # TABLE_NAME:    FITRES
+    #
+    VARNAMES:  CID IDSURVEY TYPE FIELD ... PKMJD PKMJDERR x1 x1ERR c cERR ...
+    #
+    SN: 200003 102 1 WIDE 3 0 1.27425 ... 55564.3594 0.8730 0.46904 ...
+    SN: 200005 102 1 WIDE 3 0 1.11656 ... 55176.3359 0.8836 -4.05997e-01 ...
+    ...
+
+Column order/count is not fixed (it depends on which SNTABLE_LIST/HOSTLIB
+options were on when the fit was run), so this module always reads the
+VARNAMES line to build a name -> column-index map, rather than hardcoding
+column positions.
+"""
+
+from __future__ import annotations
+
+import gzip
+import sys
+from dataclasses import dataclass, field
+from typing import Dict, Iterable, Iterator, List, Optional
+
+
+def _open_maybe_gz(path: str):
+    """Open a FITRES file, transparently handling a .gz extension."""
+    if path.endswith(".gz"):
+        return gzip.open(path, "rt")
+    return open(path, "r")
+
+
+def read_fitres(path: str) -> Iterator[Dict[str, str]]:
+    """
+    Parse a FITRES file and yield one dict per SN row, mapping
+    VARNAMES entry -> raw string value (CID is included as a string too,
+    since it's sometimes non-numeric).
+
+    Rows that don't have the same number of fields as VARNAMES are skipped
+    with a warning (this can happen on truncated/concatenated files).
+    """
+    varnames: Optional[List[str]] = None
+
+    with _open_maybe_gz(path) as f:
+        for lineno, line in enumerate(f, start=1):
+            line = line.strip()
+            if not line:
+                continue
+
+            if line.startswith("VARNAMES:"):
+                varnames = line.split()[1:]
+                continue
+
+            if line.startswith("SN:"):
+                if varnames is None:
+                    raise ValueError(
+                        f"{path}:{lineno}: found an 'SN:' row before any "
+                        "'VARNAMES:' header -- malformed FITRES file."
+                    )
+                fields = line.split()[1:]  # drop the leading 'SN:' token
+                if len(fields) != len(varnames):
+                    print(
+                        f"WARNING: {path}:{lineno}: expected "
+                        f"{len(varnames)} fields, got {len(fields)}; "
+                        "skipping this row.",
+                        file=sys.stderr,
+                    )
+                    continue
+                yield dict(zip(varnames, fields))
+            # anything else (comment lines, blank NML remnants, etc.) is ignored
+
+
+def as_float(value: str) -> Optional[float]:
+    """Best-effort str -> float, returning None for non-numeric fields."""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+@dataclass
+class QualityCuts:
+    """
+    Standard SN Ia light-curve-fit quality cuts applied before a fitted SN
+    is trusted enough to seed SALTShaker's initial tmax/snpar guesses.
+
+    Any threshold can be disabled by setting it to None. Defaults below are
+    the typical SALT2/SALT3-training quality cuts; adjust them to match
+    whatever cuts were actually used for your analysis.
+    """
+
+    require_errflag_zero: bool = True      # ERRFLAG_FIT == 0  (fit converged)
+    fitprob_min: Optional[float] = 0.01     # FITPROB >= this
+    x1_abs_max: Optional[float] = 3.0       # |x1| <= this
+    c_abs_max: Optional[float] = 0.3        # |c| <= this
+    x1err_max: Optional[float] = 1.0        # x1ERR <= this
+    cerr_max: Optional[float] = 1.0         # cERR <= this
+    pkmjderr_max: Optional[float] = 2.0     # PKMJDERR <= this
+
+    def passes(self, row: Dict[str, str]) -> bool:
+        """Return True if `row` (as produced by read_fitres) passes all cuts."""
+
+        if self.require_errflag_zero and "ERRFLAG_FIT" in row:
+            if as_float(row["ERRFLAG_FIT"]) != 0:
+                return False
+
+        checks = [
+            (self.fitprob_min, "FITPROB", lambda v, t: v >= t),
+            (self.x1_abs_max, "x1", lambda v, t: abs(v) <= t),
+            (self.c_abs_max, "c", lambda v, t: abs(v) <= t),
+            (self.x1err_max, "x1ERR", lambda v, t: v <= t),
+            (self.cerr_max, "cERR", lambda v, t: v <= t),
+            (self.pkmjderr_max, "PKMJDERR", lambda v, t: v <= t),
+        ]
+        for threshold, key, cmp in checks:
+            if threshold is None:
+                continue
+            if key not in row:
+                # column not present in this FITRES -> can't enforce, skip check
+                continue
+            val = as_float(row[key])
+            if val is None:
+                return False
+            if not cmp(val, threshold):
+                return False
+
+        return True
+
+    def add_cli_args(self, parser) -> None:
+        """Register these cuts as tunable --flags on an argparse parser."""
+        parser.add_argument(
+            "--no-errflag-cut", dest="require_errflag_zero",
+            action="store_false", default=self.require_errflag_zero,
+            help="Do not require ERRFLAG_FIT == 0.",
+        )
+        parser.add_argument(
+            "--fitprob-min", type=float, default=self.fitprob_min,
+            help=f"Minimum FITPROB (default: {self.fitprob_min}; "
+                 "use -1 to disable).",
+        )
+        parser.add_argument(
+            "--x1-abs-max", type=float, default=self.x1_abs_max,
+            help=f"Maximum |x1| (default: {self.x1_abs_max}; "
+                 "use -1 to disable).",
+        )
+        parser.add_argument(
+            "--c-abs-max", type=float, default=self.c_abs_max,
+            help=f"Maximum |c| (default: {self.c_abs_max}; "
+                 "use -1 to disable).",
+        )
+        parser.add_argument(
+            "--x1err-max", type=float, default=self.x1err_max,
+            help=f"Maximum x1ERR (default: {self.x1err_max}; "
+                 "use -1 to disable).",
+        )
+        parser.add_argument(
+            "--cerr-max", type=float, default=self.cerr_max,
+            help=f"Maximum cERR (default: {self.cerr_max}; "
+                 "use -1 to disable).",
+        )
+        parser.add_argument(
+            "--pkmjderr-max", type=float, default=self.pkmjderr_max,
+            help=f"Maximum PKMJDERR (default: {self.pkmjderr_max}; "
+                 "use -1 to disable).",
+        )
+
+    @classmethod
+    def from_args(cls, args) -> "QualityCuts":
+        def norm(x):
+            return None if (x is not None and x < 0) else x
+
+        return cls(
+            require_errflag_zero=args.require_errflag_zero,
+            fitprob_min=norm(args.fitprob_min),
+            x1_abs_max=norm(args.x1_abs_max),
+            c_abs_max=norm(args.c_abs_max),
+            x1err_max=norm(args.x1err_max),
+            cerr_max=norm(args.cerr_max),
+            pkmjderr_max=norm(args.pkmjderr_max),
+        )
+
+
+def collect_rows(
+    fitres_files: Iterable[str],
+    cuts: QualityCuts,
+    required_columns: List[str],
+) -> "list[Dict[str, str]]":
+    """
+    Read all rows out of `fitres_files`, apply `cuts`, verify each
+    surviving row has every column in `required_columns`, and de-duplicate
+    on CID across files (keeping the first occurrence and warning on
+    collisions, which normally shouldn't happen since each survey uses a
+    disjoint CIDOFF range).
+    """
+    seen: Dict[str, Dict[str, str]] = {}
+
+    for path in fitres_files:
+        n_total = 0
+        n_kept = 0
+        for row in read_fitres(path):
+            n_total += 1
+
+            missing = [c for c in required_columns if c not in row]
+            if missing:
+                raise KeyError(
+                    f"{path}: FITRES is missing required column(s) "
+                    f"{missing}; found columns include {sorted(row)[:10]}..."
+                )
+
+            if not cuts.passes(row):
+                continue
+
+            cid = row["CID"]
+            if cid in seen:
+                print(
+                    f"WARNING: duplicate CID {cid} found in {path} "
+                    f"(already seen from another file) -- keeping the "
+                    "first occurrence.",
+                    file=sys.stderr,
+                )
+                continue
+
+            seen[cid] = row
+            n_kept += 1
+
+        print(
+            f"{path}: read {n_total} SN, kept {n_kept} after quality cuts.",
+            file=sys.stderr,
+        )
+
+    return list(seen.values())
+
+
+def cid_sort_key(row: Dict[str, str]):
+    """Sort numerically on CID when possible, else lexically."""
+    cid = row["CID"]
+    try:
+        return (0, int(cid))
+    except ValueError:
+        return (1, cid)
