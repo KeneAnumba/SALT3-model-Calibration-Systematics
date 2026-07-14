@@ -1,0 +1,446 @@
+# % include: $SNANA_ROMAN_USERS/pippin_ka_analysis/inp_base_include.yml %
+
+ALIAS:
+
+  SIMLIB_FILE_ROMAN:  &simlib_file_roman
+    SIMLIB_FILE:  REPLACE_SIMLIB_FILE
+
+  SIM_SAME_SAMPLE:  &sim_same_sample
+    FORMAT_MASK:     48
+    RANSEED_CHANGE:   9  61709   #  FAST:  4
+    RANSEED:          98241    # same seed among all samples
+    SIMLIB_IDSTART:       2    # same LIBIDs among all samples
+    CIDOFF:               0    # same CIDOFF (and randoms) among all samples
+
+
+  COSPAR_SIM: &cospar_sim
+    w0_LAMBDA:     w0_xxx
+    wa_LAMBDA:     wa_xxx
+
+  COSPAR_BBC: &cospar_bbc
+      p11:  w0_xxx 
+      p12:  wa_xxx
+
+  COV_OPTS_ANALYSIS0: &cov_opts_analysis0
+    COVOPTS:   #    +FITIOPT, +MUOPT
+      - "[NOSYS]           [=DEFAULT,=DEFAULT]"
+      - "[ZSHIFT]          [+zshift,=DEFAULT]" 
+      - "[ZERRSCALE]       [+ZERRSCALE,=DEFAULT]" 
+      - "[Photo_shift]     [+Photo_shift,=DEFAULT]" 
+      - "[MWEBV]           [=MWEBV,=DEFAULT]" 
+      - "[Cal_ALL]             [+Cal,=DEFAULT]" 
+      - "[Cal_SALT3]           [+Cal_SALT3,=DEFAULT]" 
+      - "[Cal_mag_per_A]       [+Cal_mag_per_A,=DEFAULT]"
+      - "[Cal_ROMAN_nonlin]    [+Cal_ROMAN_nonlin,=DEFAULT]"
+      - "[Cal_SALT3_LSST_ZP]         [+Cal_SALT3_LSST_ZP,=DEFAULT]" 
+      - "[Cal_SALT3_LSST_wave]       [+Cal_SALT3_LSST_wave,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_ZP]        [+Cal_SALT3_ROMAN_ZP,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_wave]      [+Cal_SALT3_ROMAN_wave,=DEFAULT]"
+      - "[Cal_SALT3_LSST_ZP_u]       [+Cal_SALT3_LSST_ZP_u,=DEFAULT]"  
+      - "[Cal_SALT3_LSST_ZP_g]       [+Cal_SALT3_LSST_ZP_g,=DEFAULT]" 
+      - "[Cal_SALT3_LSST_ZP_r]       [+Cal_SALT3_LSST_ZP_r,=DEFAULT]"
+      - "[Cal_SALT3_LSST_ZP_i]       [+Cal_SALT3_LSST_ZP_i,=DEFAULT]"
+      - "[Cal_SALT3_LSST_ZP_z]       [+Cal_SALT3_LSST_ZP_z,=DEFAULT]"
+      - "[Cal_SALT3_LSST_ZP_Y]       [+Cal_SALT3_LSST_ZP_Y,=DEFAULT]"
+      - "[Cal_SALT3_LSST_wave_u]     [+Cal_SALT3_LSST_wave_u,=DEFAULT]"
+      - "[Cal_SALT3_LSST_wave_g]     [+Cal_SALT3_LSST_wave_g,=DEFAULT]"
+      - "[Cal_SALT3_LSST_wave_r]     [+Cal_SALT3_LSST_wave_r,=DEFAULT]"
+      - "[Cal_SALT3_LSST_wave_i]     [+Cal_SALT3_LSST_wave_i,=DEFAULT]"
+      - "[Cal_SALT3_LSST_wave_z]     [+Cal_SALT3_LSST_wave_z,=DEFAULT]"
+      - "[Cal_SALT3_LSST_wave_Y]     [+Cal_SALT3_LSST_wave_Y,=DEFAULT]"   
+      - "[Cal_SALT3_ROMAN_ZP_R]      [+Cal_SALT3_ROMAN_ZP_R,=DEFAULT]" 
+      - "[Cal_SALT3_ROMAN_ZP_Z]      [+Cal_SALT3_ROMAN_ZP_Z,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_ZP_Y]      [+Cal_SALT3_ROMAN_ZP_Y,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_ZP_J]      [+Cal_SALT3_ROMAN_ZP_J,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_ZP_H]      [+Cal_SALT3_ROMAN_ZP_H,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_ZP_F]      [+Cal_SALT3_ROMAN_ZP_F,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_wave_R]    [+Cal_SALT3_ROMAN_wave_R,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_wave_Z]    [+Cal_SALT3_ROMAN_wave_Z,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_wave_Y]    [+Cal_SALT3_ROMAN_wave_Y,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_wave_J]    [+Cal_SALT3_ROMAN_wave_J,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_wave_H]    [+Cal_SALT3_ROMAN_wave_H,=DEFAULT]"
+      - "[Cal_SALT3_ROMAN_wave_F]    [+Cal_SALT3_ROMAN_wave_F,=DEFAULT]"
+
+
+  COV_OPTS_ANALYSIS1: &cov_opts_analysis1
+    COVOPTS:   #    +FITIOPT, +MUOPT
+      - "[NOSYS]           [=DEFAULT,=DEFAULT]"
+      - "[ZSHIFT]          [+zshift,=DEFAULT]" 
+      - "[ZERRSCALE]       [+ZERRSCALE,=DEFAULT]" 
+      - "[Photo_shift]     [+Photo_shift,=DEFAULT]" 
+      - "[MWEBV]           [=MWEBV,=DEFAULT]" 
+      - "[Cal_ALL]             [+Cal,=DEFAULT]"  
+      - "[Cal_mag_per_A]       [+Cal_mag_per_A,=DEFAULT]"
+      - "[Cal_ROMAN_nonlin]    [+Cal_ROMAN_nonlin,=DEFAULT]"
+      - "[Cal_SALT3]           [+Cal_SALT3,=DEFAULT]" 
+
+  COV_OPTS_BASELINE: &cov_opts_baseline
+    COVOPTS:   # +FITIOPT, +MUOPT
+      - "[NOSYS]            [=DEFAULT,=DEFAULT]"
+
+  COV_OPTS_UNBIN_BASELINE: &cov_opts_unbin_baseline
+    COVOPTS:   # +FITIOPT, +MUOPT
+      - "[NOSYS]            [=DEFAULT,=DEFAULT]"
+
+
+#  COV_OPTS_UNBIN_ANALYSIS0: &cov_opts_unbin_analysis0
+#    COVOPTS:   #    +FITIOPT, +MUOPT
+#      - "[NOSYS]           [=DEFAULT,=DEFAULT]"
+
+#  COV_OPTS_UNBIN_ANALYSIS1: &cov_opts_unbin_analysis1
+#    COVOPTS:   #    +FITIOPT, +MUOPT
+#      - "[NOSYS]           [=DEFAULT,=DEFAULT]"
+
+# - - -     
+  w_OPTS: &w_opts
+    WFITOPTS:
+    - /CMB_PRI/ -cmb_sim -sigma_Rcmb 0.0044  -wsteps 201 -omsteps 61 -ommin .15 -ommax .45 -outfile_chi2grid dummy.out -outfile_resid resid.out
+
+  w0wa_OPTS: &w0wa_opts
+    WFITOPTS:
+    - /CMB_PRI/ -cmb_sim -sigma_Rcmb 0.0044  -wa -wamin -0.8 -wamax 0.8 -wasteps 91 -omsteps 61 -ommin .15 -ommax .45 -w0steps 101 -w0min -1.5 -w0max -0.5 -outfile_chi2grid dummy.out -outfile_resid resid.out
+
+  w0wa_OPTS_UNBIN: &w0wa_opts_unbin
+    WFITOPTS:
+    - /CMB_PRI/ -cmb_sim -sigma_Rcmb 0.0044  -wa -wamin -0.6 -wamax 0.6 -wasteps 81 -omsteps 37 -ommin .21 -ommax .39 -w0steps 81 -w0min -1.4 -w0max -0.6  -outfile_chi2grid dummy.out -outfile_resid resid.out
+
+
+# --------------
+      
+SIM:
+  ROMAN_BCOR_CC:
+    EXTERNAL: $PIPPIN_OUTPUT/ROMAN02_XX_LCDM_BCOR/1_SIM/ROMAN_BCOR_CC
+  ROMAN_BCOR_Ia:
+    EXTERNAL: $PIPPIN_OUTPUT/ROMAN02_XX_LCDM_BCOR/1_SIM/ROMAN_BCOR_Ia
+  LOWZ_BCOR:
+    EXTERNAL: $PIPPIN_OUTPUT/ROMAN02_XX_LCDM_BCOR/1_SIM/LOWZ_BCOR
+  DDF_BCOR:
+    EXTERNAL: $PIPPIN_OUTPUT/ROMAN02_XX_LCDM_BCOR/1_SIM/DDF_BCOR
+
+
+  ROMAN_DATA:
+    IA:
+      BASE: $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMGEN_TRANSIENT_SNIa-normal.INPUT
+      <<: *roman_base_ia
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+      <<: *sniamodel_dust      
+    
+    PECIAX:
+      <<: *roman_base_peciax
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    PECIA91BG:
+      <<: *roman_base_pec91bg
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    IIP_TEMPLATES:
+      <<: *roman_base_iip
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    IIL_TEMPLATES:
+      <<: *roman_base_iil
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    Ib_TEMPLATES:
+      <<: *roman_base_ib
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    Ic_TEMPLATES:
+      <<: *roman_base_ic
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+  
+    
+    GLOBAL:
+      NGEN_UNIT:      1.0   #  FAST: 0.2
+      FORMAT_MASK:    48
+      RANSEED_CHANGE:  9  121549  # FAST: 4
+      <<: *batch_info_simgen_roman
+      <<: *cospar_sim
+
+# - - - - - -
+  LOWZ_DATA:
+    IA:
+      <<: *lowz_base
+      <<: *sniamodel_dust    
+      NGENTOT_LC:        5200    # ADJUST to get get 800 at output of BBC stage
+    GLOBAL:
+      FORMAT_MASK:    48
+      RANSEED_CHANGE:  9  893321  # FAST: 4
+# xxx      <<: *sim_same_sample
+      <<: *batch_info_simgen_lowz
+      <<: *cospar_sim
+
+  DDF_DATA:
+    IA:
+      <<: *ddf_base
+      <<: *ddf_redshift_data 
+      <<: *sniamodel_dust    
+      NGENTOT_LC:   8800       #  ADJUST to get 3500 at output of BBC stage FAST: 2000 
+    GLOBAL:
+      FORMAT_MASK:    48
+      RANSEED_CHANGE:  9  655487    # FAST: 4
+# xxx mark      <<: *sim_same_sample
+      <<: *batch_info_simgen_ddf
+      <<: *cospar_sim
+
+# ----------------------------------------------------
+LCFIT:
+  FIT_ROMAN_DATA:
+    BASE: $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMFIT_ROMAN_TEMPLATE.nml
+    MASK: ROMAN_DATA
+    FITOPTS:  FITOPTS_XXX
+    OPTS:
+      <<: *batch_info_lcfit_roman_data
+    SNLCINP:
+      <<: *roman_snlcinp_cuts
+    FITINP:
+      FITMODEL_NAME:  FITMODEL_NAME_XXX
+      <<: *roman_fitinp_cuts
+
+# fit again for biascor; leave out FITOPTs
+  FIT_ROMAN_BCOR:
+    BASE: $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMFIT_ROMAN_TEMPLATE.nml
+    MASK: ROMAN_BCOR
+    EXTERNAL_DIRS:
+      - $PIPPIN_OUTPUT/ROMANXX_XX_LCDM_BCOR/2_LCFIT/ROMAN_ROMAN_BCOR_Ia
+      - $PIPPIN_OUTPUT/ROMANXX_XX_LCDM_BCOR/2_LCFIT/ROMAN_ROMAN_BCOR_CC
+    EXTERNAL_MAP:
+      FIT_ROMAN_BCOR_ROMAN_BCOR_Ia: ROMAN_ROMAN_BCOR_Ia
+      FIT_ROMAN_BCOR_ROMAN_BCOR_CC: ROMAN_ROMAN_BCOR_CC
+      
+# - - - - - - -
+
+  FIT_LOWZ_DATA:
+    BASE:  $directory_path/Inputs/LCFIT_LSST.NML
+    MASK:  LOWZ_DATA
+    FITOPTS:  FITOPTS_XXX
+    OPTS:
+      <<: *batch_info_lcfit_lowz
+    FITINP:
+      FITMODEL_NAME:  FITMODEL_NAME_XXX
+ 
+# fit again for biascor; leave out FITOPTs
+  FIT_LOWZ_BCOR:
+    BASE: $directory_path/Inputs/LCFIT_LSST.NML
+    MASK: LOWZ_BCOR
+#    OPTS:
+#      <<: *batch_info_lcfit
+
+# xxxxxxx
+#    EXTERNAL_DIRS:
+#      - $PIPPIN_OUTPUT/ROMAN01_BCOR+TRAIN/2_LCFIT/LOWZ_LOWZ_BCOR
+# xxxxxxx
+
+    EXTERNAL_DIRS:
+      - $PIPPIN_OUTPUT/ROMANXX_KA_LCDM_BCOR/2_LCFIT/LOWZ_LOWZ_BCOR
+    EXTERNAL_MAP:
+      FIT_LOWZ_BCOR_LOWZ_BCOR:  LOWZ_LOWZ_BCOR
+
+# - - - -
+  FIT_DDF_DATA:
+    BASE:  $directory_path/Inputs/LCFIT_LSST.NML
+    MASK:  DDF_DATA
+    FITOPTS:  FITOPTS_XXX
+    OPTS:
+      <<: *batch_info_lcfit_ddf
+    FITINP:
+      FITMODEL_NAME:  FITMODEL_NAME_XXX
+
+# fit again for biascor; leave out FITOPTs
+  FIT_DDF_BCOR:
+    BASE: $directory_path/Inputs/LCFIT_LSST.NML
+    MASK: DDF_BCOR
+#    OPTS:
+#      <<: *batch_info_lcfit
+
+# xxxxxxxxxxx
+#    EXTERNAL_DIRS:
+#      - $PIPPIN_OUTPUT/ROMAN01_BCOR+TRAIN/2_LCFIT/DDF_DDF_BCOR
+# xxxxxxxxxxxx
+
+    EXTERNAL_DIRS:
+      - $PIPPIN_OUTPUT/ROMANXX_KA_LCDM_BCOR/2_LCFIT/DDF_DDF_BCOR
+    EXTERNAL_MAP:
+      FIT_DDF_BCOR_DDF_BCOR:  DDF_DDF_BCOR
+
+# - - - - - - 
+
+CLASSIFICATION:
+  SCONE_PREDICT:
+    CLASSIFIER: SconeClassifier
+    BASE:  $directory_path/Inputs/SCONE.INPUT
+    MODE:  predict
+    MASK:  ROMAN_DATA
+    OPTS:
+      OPTIONAL_MASK_FIT:  ROMAN_DATA
+      NUM_EPOCHS: 200
+      GPU: False
+      TRAINED_MODEL: $PIPPIN_OUTPUT/ROMANXX_WWWW_BCOR/3_CLAS/SCONE_TRAIN_ROMAN_BCOR_CC_ROMAN_BCOR_Ia/trained_model
+
+#      BATCH_REPLACE:
+#      #        REPLACE_MEM: 16GB
+
+
+# - - - - - - 
+AGGREGATION:
+  AGG:
+
+MERGE:
+  MERGE:
+
+
+BIASCOR:     # BBC stage
+  BBC_ALL:
+    BASE: $directory_path/Inputs/SALT2mu_BBC.INPUT
+    DATA: [ FIT_ROMAN_DATA_ROMAN_DATA, FIT_LOWZ_DATA_LOWZ_DATA, FIT_DDF_DATA_DDF_DATA ]
+    CLASSIFIER:  SCONE_PREDICT
+    SIMFILE_BIASCOR: [ FIT_ROMAN_BCOR_ROMAN_BCOR_Ia, FIT_LOWZ_BCOR_LOWZ_BCOR, FIT_DDF_BCOR_DDF_BCOR ]
+    SIMFILE_CCPRIOR:   FIT_ROMAN_BCOR_ROMAN_BCOR_CC
+    OPTS:
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 40
+      <<: *cospar_bbc
+
+  BBC_noDDF:
+    BASE: $directory_path/Inputs/SALT2mu_BBC.INPUT
+    DATA: [ FIT_ROMAN_DATA_ROMAN_DATA, FIT_LOWZ_DATA_LOWZ_DATA ]
+    CLASSIFIER:  SCONE_PREDICT
+    SIMFILE_BIASCOR: [ FIT_ROMAN_BCOR_ROMAN_BCOR_Ia, FIT_LOWZ_BCOR_LOWZ_BCOR ]
+    SIMFILE_CCPRIOR:   FIT_ROMAN_BCOR_ROMAN_BCOR_CC
+    OPTS:
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 30
+      <<: *cospar_bbc
+
+  BBC_noWIDE:
+    BASE: $directory_path/Inputs/SALT2mu_BBC.INPUT
+    DATA: [ FIT_ROMAN_DATA_ROMAN_DATA, FIT_LOWZ_DATA_LOWZ_DATA, FIT_DDF_DATA_DDF_DATA ]
+    CLASSIFIER:  SCONE_PREDICT
+    SIMFILE_BIASCOR: [ FIT_ROMAN_BCOR_ROMAN_BCOR_Ia, FIT_LOWZ_BCOR_LOWZ_BCOR, FIT_DDF_BCOR_DDF_BCOR ]
+    SIMFILE_CCPRIOR:   FIT_ROMAN_BCOR_ROMAN_BCOR_CC
+    OPTS:
+      fieldlist:           WFD,DDF,DEEP
+      fieldgroup_biascor:  WFD(zbin=.02),DDF(zbin=.04),DEEP(zbin=0.08)
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 30
+      <<:  *cospar_bbc
+
+  BBC_noDEEP:
+    BASE: $directory_path/Inputs/SALT2mu_BBC.INPUT
+    DATA: [ FIT_ROMAN_DATA_ROMAN_DATA, FIT_LOWZ_DATA_LOWZ_DATA, FIT_DDF_DATA_DDF_DATA ]
+    CLASSIFIER:  SCONE_PREDICT
+    SIMFILE_BIASCOR: [ FIT_ROMAN_BCOR_ROMAN_BCOR_Ia, FIT_LOWZ_BCOR_LOWZ_BCOR, FIT_DDF_BCOR_DDF_BCOR ]
+    SIMFILE_CCPRIOR:   FIT_ROMAN_BCOR_ROMAN_BCOR_CC
+    OPTS:
+      fieldlist:           WFD,DDF,WIDE
+      fieldgroup_biascor:  WFD(zbin=.02),DDF(zbin=.04),WIDE(zbin=0.05)
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 30
+      <<: *cospar_bbc
+
+# =========================
+
+CREATE_COV:
+  BINNED:
+    MASK: BBC
+    OPTS:
+      BINNED: True
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 9
+      <<: *cov_opts_xxx
+
+  REBIN:
+    MASK: BBC
+    OPTS:
+      BINNED:      False
+      REBINNED_X1: 4 # Rebin x1 into 4 bins
+      REBINNED_C:  8 # Rebin c into 8 bins
+      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 9
+      <<: *cov_opts_xxx
+
+  # note that extra cores and memory are allocated for unbinned,
+  # and only BBC_ALL is processed (noDDF, noWIDE, noDEEP are skipped)
+#  UNBIN:
+#    MASK: BBC
+#    OPTS:
+#      BINNED:      False
+#      BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 27
+#      BATCH_MEM:  40GB     
+#      <<: *cov_opts_unbin_xxx
+
+#------------
+# WFIT
+
+COSMOFIT:
+  WFIT:
+    wCDM_BINNED:
+      MASK: BINNED
+      OPTS:
+        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 18
+        <<: *w_opts
+        WFITAVG:
+        - BINNED_BBC_ALL
+        - BINNED_BBC_noDDF
+        - BINNED_BBC_noWIDE
+        - BINNED_BBC_noDEEP
+
+    w0waCDM_BINNED:
+      MASK: BINNED
+      OPTS:
+        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 36
+        <<: *w0wa_opts
+        WFITAVG:
+        - BINNED_BBC_ALL
+        - BINNED_BBC_noDDF
+        - BINNED_BBC_noWIDE
+        - BINNED_BBC_noDEEP
+
+# - - - - 
+    wCDM_REBIN:
+      MASK: REBIN
+      OPTS:
+        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 18
+        <<: *w_opts
+        WFITAVG:
+        - REBIN_BBC_ALL
+        - REBIN_BBC_noDDF
+        - REBIN_BBC_noWIDE
+        - REBIN_BBC_noDEEP
+
+    w0waCDM_REBIN:
+      MASK: REBIN
+      OPTS:
+        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 72
+        <<: *w0wa_opts
+        WFITAVG:
+        - REBIN_BBC_ALL
+        - REBIN_BBC_noDDF
+        - REBIN_BBC_noWIDE
+        - REBIN_BBC_noDEEP
+
+# - - - - 
+#    wCDM_UNBIN:
+#      MASK: UNBIN
+#      OPTS:
+#        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 36
+#        <<: *w_opts
+#        WFITAVG:
+#        - UNBIN_BBC_ALL
+#        - UNBIN_BBC_noDDF
+#        - UNBIN_BBC_noWIDE
+#        - UNBIN_BBC_noDEEP
+
+#    w0waCDM_UNBIN:
+#      MASK: UNBIN
+#      OPTS:
+#        BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 72
+#        <<: *w0wa_opts_unbin
+#        WFITAVG:
+#        - UNBIN_BBC_ALL
+#        - UNBIN_BBC_noDDF
+#        - UNBIN_BBC_noWIDE
+#        - UNBIN_BBC_noDEEP
+
+# === END ===
