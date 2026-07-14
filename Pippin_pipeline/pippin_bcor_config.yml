@@ -1,0 +1,159 @@
+# 
+# Survey stragegy is defined by this SIMLIB/Cadence file:
+#    $SNANA_ROMAN_USERS/rkessler/makeSimlib/set06_ccs-recommendation/output_CCSREC_V1/ROMAN-a00-t00-z00_x00.SIMLIB
+# 
+# bcor task summary: 
+#	 BiasCorr: Large bias-correction simulation, light curve fitting (LCFIT), and SCONE-classifier training.
+# True w0 wa = -1.0  0.0
+# FAST option is False
+# 
+# Search "ADJUST" to adjust sample sizes
+# Jan 29 2025: 
+#    rewgt Ia by PROB**0.7 to enhance low-prob regions 
+#    increase sample size by x4 & x2 for Ia,CC
+#
+# % include:  $SNANA_ROMAN_USERS/pippin_ka_analysis/inp_base_include.yml %
+
+
+ALIAS:
+
+  SIMLIB_FILE_ROMAN:  &simlib_file_roman
+    SIMLIB_FILE:   $SNANA_ROMAN_USERS/rkessler/makeSimlib/set06_ccs-recommendation/output_CCSREC_V1/ROMAN-a00-t00-z00_x00.SIMLIB
+
+  NBCOR_ROMAN_Ia: &nbcor_roman_ia
+    NGEN_UNIT:      4.0   #  FAST: 0.4, Trippled from 4 to 12 (25th Aug 2025)
+    RANSEED_REPEAT: 40  904363
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 40
+    BATCH_MEM: 8GB
+
+  NBCOR_ROMAN_CC: &nbcor_roman_cc
+    NGEN_UNIT:      2.0   #  FAST: 0.2
+    RANSEED_REPEAT: 40  104337
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 40
+    BATCH_MEM: 8GB
+
+  COSPAR_SIM: &cospar_sim
+    w0_LAMBDA:         -1.0
+    wa_LAMBDA:         0.0
+    
+# the NOT_ROMAN comment tells create_roman_pippin_inputs.py to simulate
+# lowz biascor only once and use the same lowz biascor for all Roman+lowz sets
+  NBCOR_LOWZ: &nbcor_lowz                                             # NOT_ROMAN
+    NGEN_UNIT:      1.0   # FAST: 0.2, increased by a factor 10 (25th August 2025) # NOT_ROMAN
+    RANSEED_REPEAT: 20  4369011                                       # NOT_ROMAN
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 20  # NOT_ROMAN
+    BATCH_MEM: 8GB                                                    # NOT_ROMAN
+
+# the NOT_ROMAN comment tells create_roman_pippin_inputs.py to simulate
+# lowz biascor only once and use the same lowz biascor for all Roman+lowz sets
+  NBCOR_DDF: &nbcor_ddf                                               # NOT_ROMAN
+    NGEN_UNIT:      1.0   # FAST: 0.1, doubled from 1 to 2 (25th Aug 2025) # NOT_ROMAN
+    RANSEED_REPEAT: 20  360005                                        # NOT_ROMAN
+    BATCH_INFO: sbatch $SBATCH_TEMPLATES/SBATCH_Midway2b.TEMPLATE 20  # NOT_ROMAN
+    BATCH_MEM: 8GB                                                    # NOT_ROMAN
+
+# - - - - -
+SIM:
+  ROMAN_BCOR_CC:
+    PECIAX:
+      <<: *roman_base_peciax
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+# ---
+    PECIA91BG:
+      <<: *roman_base_pec91bg
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+# ---
+    IIP_TEMPLATES:
+      <<: *roman_base_iip
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    IIL_TEMPLATES:
+      <<: *roman_base_iil
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+ 
+    Ib_TEMPLATES:
+      <<: *roman_base_ib
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    Ic_TEMPLATES:
+      <<: *roman_base_ic
+      <<: *hostlib_file_roman
+      <<: *simlib_file_roman
+
+    GLOBAL:
+      <<: *nbcor_roman_cc
+      <<: *cospar_sim
+ 
+  ROMAN_BCOR_Ia:
+    IA_OPTS_ROMAN:
+      <<: *roman_base_ia
+      <<: *simlib_file_roman
+      <<: *hostlib_file_roman
+      <<: *sniamodel_dust
+      GENPDF_EXPON_REWGT:  0.7
+
+    GLOBAL:
+      <<: *nbcor_roman_ia
+      <<: *cospar_sim
+
+  DDF_BCOR:                      # NOT_ROMAN
+    IA_OPTS_DDF:                 # NOT_ROMAN
+      <<: *ddf_base              # NOT_ROMAN
+      <<: *ddf_redshift_bcor     # NOT_ROMAN
+      <<: *sniamodel_dust        # NOT_ROMAN       
+    GLOBAL:                      # NOT_ROMAN
+      <<: *nbcor_ddf             # NOT_ROMAN
+
+  LOWZ_BCOR:                     # NOT_ROMAN
+    IA_OPTS_LOWZ:                # NOT_ROMAN
+      <<: *lowz_base             # NOT_ROMAN
+      <<: *sniamodel_dust        # NOT_ROMAN   
+    GLOBAL:                      # NOT_ROMAN
+      <<: *nbcor_lowz            # NOT_ROMAN
+
+
+LCFIT:
+
+  DDF:      # NOT_ROMAN
+    BASE: $directory_path/LCFIT_LSST.NML # NOT_ROMAN
+    MASK: DDF_BCOR                    # NOT_ROMAN
+    OPTS:                             # NOT_ROMAN
+      <<: *batch_info_lcfit_ddf       # NOT_ROMAN
+    FITINP:                           #	NOT_ROMAN
+      FITMODEL_NAME: $model_dir_path/SALT3.MODEL000  #	NOT_ROMAN
+
+  LOWZ:      # NOT_ROMAN
+    BASE: $directory_path/LCFIT_LSST.NML # NOT_ROMAN
+    MASK: LOWZ_BCOR                   # NOT_ROMAN
+    OPTS:                             # NOT_ROMAN
+      <<: *batch_info_lcfit_lowz      # NOT_ROMAN
+    FITINP:                           # NOT_ROMAN
+      FITMODEL_NAME:  $model_dir_path/SALT3.MODEL000  # NOT_ROMAN
+
+
+  ROMAN:
+    BASE: $SNANA_ROMAN_ROOT/starterKits/sample_input_files/SIMFIT_ROMAN_TEMPLATE.nml
+    MASK: ROMAN_BCOR
+    OPTS:
+      <<: *batch_info_lcfit_roman_bcor
+    SNLCINP:
+      <<: *roman_snlcinp_cuts
+    FITINP:
+      FITMODEL_NAME: $model_dir_path/SALT3.MODEL000 
+      <<: *roman_fitinp_cuts
+
+CLASSIFICATION:
+  SCONE_TRAIN:                 
+    CLASSIFIER:  SconeClassifier
+    BASE: $directory_path/SCONE.INPUT 
+    MODE: train
+    COMBINE_MASK:  ROMAN_BCOR_Ia,ROMAN_BCOR_CC
+    OPTS:
+      OPTIONAL_MASK_FIT:  ROMAN_BCOR
+      NUM_EPOCHS:   200
+
