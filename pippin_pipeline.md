@@ -9,7 +9,7 @@ Pippin organizes the jobs and their outputs in different stages (1_SIM,2_LCFIT, 
 run directory. Furthermore, later stages reference earlier ones by the task names defined in the YAML. Also, Pippin resolves the directory paths and job dependencies automatically.
 For further details on pippin, see below:
 
-[Pippin stages](https://github.com/dessn/PIPPIN)
+[Pippin](https://github.com/dessn/PIPPIN)
 
 ## Pippin Input Files
 The top level files are:
